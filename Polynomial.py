@@ -14,7 +14,7 @@ class Polynomial:
 
 
 def test():
-    poly1 = Polynomial([1, 2])
+    poly1 = Polynomial([1, 2, 3])
     poly2 = Polynomial([1, 2])
     print(poly1.multiply(poly2))
 
