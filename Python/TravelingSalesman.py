@@ -1,5 +1,5 @@
 import itertools
-
+from AdjacenceMatrix import *
 from Location import *
 
 
@@ -11,6 +11,10 @@ def brute_force(locations):
     permutations = itertools.permutations(locations)
     return min(distances(it) for it in permutations)
 
+def divide_et_impera(locations):
+    a = AdjacenceMatrix(locations, distance)
+    lsts = a.splitting(4)
+
 
 def test(n):
     locations = generate(n)
@@ -18,3 +22,5 @@ def test(n):
     return brute_force(locations)
 
 print(test(9))
+
+
