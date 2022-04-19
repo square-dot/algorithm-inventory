@@ -1,3 +1,7 @@
+from cmath import exp, pi
+
+
+
 class Polynomial:
     def __init__(self, coefficients):
         self.coefficients = coefficients
@@ -12,10 +16,19 @@ class Polynomial:
                 total_coefficients[idx + i] += val * v
         return Polynomial(total_coefficients)
 
+    def evaluate(self, x):
+        return sum(self.coefficients[l] * x**l for l in range(len(self.coefficients)))
 
-def test():
-    poly1 = Polynomial([1, 2, 3])
-    poly2 = Polynomial([1, 2])
-    print(poly1.multiply(poly2))
+    def squarerootpoints(self, n):
+        sqroots = [self.evaluate(exp(2*pi*complex(0, 1)/n)) for _ in range(n)]
 
-test()
+
+def test(n, m):
+    poly1 = Polynomial(range(1, n))
+    poly2 = Polynomial(range(1, m))
+    res = poly1.multiply(poly2)
+    print(res.evaluate(1))
+
+test(6000, 4000)
+
+
