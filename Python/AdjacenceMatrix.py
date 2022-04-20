@@ -12,6 +12,8 @@ class AdjacenceMatrix:
         print(f"Created adjacence matrix from {len(self.elements)} elements")
 
     def get(self, a, b):
+        if [a, b] not in self.c.keys():
+            print(f'{[a, b].__str__()} not found')
         return self.c[a, b]
     
     def splitting(self, n):
