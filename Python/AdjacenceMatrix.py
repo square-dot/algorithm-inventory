@@ -7,11 +7,12 @@ class AdjacenceMatrix:
         self.c = {}
         for e in collection:
             for d in collection:
-                self.c[Tuple([e, d])] = mapping(e, d)
+                self.c[e, d] = mapping(e, d)
         self.elements = collection
+        print(f"Created adjacence matrix from {len(self.elements)} elements")
 
     def get(self, a, b):
-        return self.c[Tuple([a, b])]
+        return self.c[a, b]
     
     def splitting(self, n):
         stair = sorted(self.c.values())
@@ -30,6 +31,7 @@ class AdjacenceMatrix:
                     this_list.append(b)
                     considered.append(b)
             lsts.append(this_list)
+        print(lsts)
         return lsts
 
 
