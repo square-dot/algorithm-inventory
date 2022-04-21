@@ -1,6 +1,7 @@
+from itertools import combinations
 import random
 import math
-
+import copy
 
 class Location:
     def __init__(self, lati, longi):
@@ -33,6 +34,62 @@ def distance(location1, location2):
     lati = location1.latitude - location2.latitude
     return math.sqrt(lati**2 + longi**2)
 
+def cluster_distance(locations1, locations2):
+    d = distance(locations1[0], locations2[0])
+    for l in locations1:
+        for g in locations2:
+            d = min(d, distance(l, g))
+    return d
+
+def closest_elements(locations1, locations2):
+    t = (locations1[0], locations2[0])
+    d = distance(locations1[0], locations2[0])
+    for l in locations1:
+        for g in locations2:
+            if d > distance(l, g):
+                d =distance(l, g)
+                t = (l, g)
+    return t
+
+def diameter(locations):
+    comb = list(combinations(locations, 2))
+    ds = [distance(c[0], c[1]) for c in comb]
+    return max(ds)
+
+def clustering_distances(locations):
+    loc = copy.copy(locations)
+    clus = []
+    distances = []
+    for l in locations:
+        print(loc)
+        clus.append(l)
+        loc.remove(l)
+        if not loc:
+            break
+        distances.append(cluster_distance(clus, loc))
+    return distances
+
+
+def splitting(coll, n):
+        stair = sorted(clustering_distances(copy.copy(coll)))
+        dis = stair[- n + 1]
+        print(f"The threshold is {dis}")
+        lsts = [[coll[0]]]
+        for a in coll[1:]:
+            appended = False
+            for e in lsts:
+                if cluster_distance([a], e) < dis:
+                    e.append(a)
+                    appended = True
+            if not appended:
+                lsts.append([a])
+        print(f"The {len(coll)} elements have been splitted in the following subsets")
+        for l in lsts:
+            print(l)
+        return lsts
+
 
 def test():
-    print(generate(5))
+    diameter([Location(1, 0), Location(2, 4), Location(4, 90)])
+
+test()

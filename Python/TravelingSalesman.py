@@ -3,24 +3,25 @@ from AdjacenceMatrix import *
 from Location import *
 
 
-def distances(locations):
+def pathlength(locations):
     return sum(distance(locations[i], locations[i + 1]) for i in range(len(locations) - 1))
 
 
 def brute_force(locations):
     permutations = itertools.permutations(locations)
-    return min(distances(it) for it in permutations)
+    return min(pathlength(it) for it in permutations)
+
 
 def divide_et_impera(locations):
-    a = AdjacenceMatrix(locations, distance)
-    lsts = a.splitting(4)
-
-
-def test(n):
-    locations = generate(n)
-    print(locations)
-    return brute_force(locations)
-
-print(test(9))
-
+    lsts = splitting(locations, 3)
+    tot = sum(pathlength(l) for l in lsts)
+    permutations = list(itertools.permutations(lsts))
+    minimalconnections = sum(distance(l, Location(0,0)) for l in locations)
+    for permu in permutations:
+        tot = 0
+        for i in range(len(permu) - 1):
+            tot += cluster_distance(permu[i], permu[i+1])
+            tot += diameter(permu[i])
+        minimalconnections = min(tot, minimalconnections)
+    return tot
 

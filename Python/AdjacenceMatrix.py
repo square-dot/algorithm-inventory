@@ -1,5 +1,4 @@
-from typing import Tuple
-import math
+from Location import *
 
 
 class AdjacenceMatrix:
@@ -7,34 +6,30 @@ class AdjacenceMatrix:
         self.c = {}
         for e in collection:
             for d in collection:
-                self.c[e, d] = mapping(e, d)
+                self.c[(e, d)] = mapping(e, d)
         self.elements = collection
-        print(f"Created adjacence matrix from {len(self.elements)} elements")
+        print(f"Created adjacence matrix from {self.nrelements()} elements")
+        print(self.__str__())
+
+    def __str__(self) -> str:
+        s = "\t"
+        for el in self.elements:
+            s += f"{el}" + "\t"
+        s += "\n"
+        for el in self.elements:
+            s += f"{el}" + "\t"
+            for le in self.elements:
+                s += "{:.1f}".format(self.get(el, le)) + "\t"
+            s += "\n"
+        return s
 
     def get(self, a, b):
-        if [a, b] not in self.c.keys():
-            print(f'{[a, b].__str__()} not found')
-        return self.c[a, b]
+        if (a, b) not in self.c.keys():
+            print(f'{(a, b).__str__()} not found')
+        return self.c[(a, b)]
     
-    def splitting(self, n):
-        stair = sorted(self.c.values())
-        dis = stair[len(self.elements) * (len(self.elements) - 1) - n + 1]
-        lsts = []
-        considered = []
-        for a in self.elements:
-            if a in considered:
-                continue
-            this_list = [a]
-            considered.append(a)
-            for b in self.elements:
-                if b in considered:
-                    continue
-                if self.get(a, b) <= dis:
-                    this_list.append(b)
-                    considered.append(b)
-            lsts.append(this_list)
-        print(lsts)
-        return lsts
+    def nrelements(self):
+        return len(self.elements)
 
 
 
