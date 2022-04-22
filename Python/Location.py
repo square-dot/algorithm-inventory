@@ -2,6 +2,7 @@ from itertools import combinations
 import random
 import math
 import copy
+import sys
 
 class Location:
     def __init__(self, lati, longi):
@@ -47,33 +48,33 @@ def closest_elements(locations1, locations2):
     for l in locations1:
         for g in locations2:
             if d > distance(l, g):
-                d =distance(l, g)
+                d = distance(l, g)
                 t = (l, g)
     return t
 
 def diameter(locations):
+    if len(locations) == 1:
+        return 0
     comb = list(combinations(locations, 2))
     ds = [distance(c[0], c[1]) for c in comb]
     return max(ds)
 
-def clustering_distances(locations):
+def clustering_distances(locations) -> list:
     loc = copy.copy(locations)
-    clus = []
+    clus = [loc[0]]
+    loc.remove(loc[0])
     distances = []
-    for l in locations:
-        print(loc)
-        clus.append(l)
-        loc.remove(l)
-        if not loc:
-            break
-        distances.append(cluster_distance(clus, loc))
+    while loc:
+        t = closest_elements(clus, loc)
+        clus.append(t[1])
+        loc.remove(t[1])
+        distances.append(distance(t[0], t[1]))
     return distances
 
 
-def splitting(coll, n):
+def splitting(coll, n) -> list:
         stair = sorted(clustering_distances(copy.copy(coll)))
         dis = stair[- n + 1]
-        print(f"The threshold is {dis}")
         lsts = [[coll[0]]]
         for a in coll[1:]:
             appended = False
@@ -83,13 +84,6 @@ def splitting(coll, n):
                     appended = True
             if not appended:
                 lsts.append([a])
-        print(f"The {len(coll)} elements have been splitted in the following subsets")
-        for l in lsts:
-            print(l)
+        if len(lsts) != n:
+            raise ValueError(f"The splitting produced {len(lsts)} instead of {n}")
         return lsts
-
-
-def test():
-    diameter([Location(1, 0), Location(2, 4), Location(4, 90)])
-
-test()

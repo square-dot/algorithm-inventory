@@ -8,8 +8,8 @@ class AdjacenceMatrix:
             for d in collection:
                 self.c[(e, d)] = mapping(e, d)
         self.elements = collection
-        print(f"Created adjacence matrix from {self.nrelements()} elements")
-        print(self.__str__())
+        # print(f"Created adjacence matrix from {self.nrelements()} elements")
+        # print(self.__str__())
 
     def __str__(self) -> str:
         s = "\t"
