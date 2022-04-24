@@ -28,6 +28,12 @@ class AdjacenceMatrix:
             print(f'{(a, b).__str__()} not found')
         return self.c[(a, b)]
     
+    def get_groups(self, dis) -> list:
+        selected = [k for k in self.c.items() if k[1] <= dis]
+        groups = [[self.elements[0]]]
+        return []            
+
+
     def nrelements(self):
         return len(self.elements)
 
