@@ -2,6 +2,7 @@ import itertools
 from AdjacenceMatrix import *
 from Location import *
 
+
 max_brute_force = 8
 
 def pathlength(locations):
