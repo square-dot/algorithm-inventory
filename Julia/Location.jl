@@ -6,10 +6,20 @@ struct Location
     latitude::Int
 end
 
-function distance(location, otherlocation)
+function distance(location::Location, otherlocation::Location)::float
     return sqrt((location.longitude - otherlocation.longitude)^2 + (location.latitude - otherlocation.latitude)^2)
 end
 
+function distance(location::Location, otherlocations::Vector{Location})::float
+    return min(map(x -> distance(location, x), otherlocations))
+end
+
+function distance(otherlocations::Vector{Location}, location::Location)::float
+    return distance(location, otherlocations)
+end
+
+function distance(locations::Vector{Location}, otherlocations::Vector{Location})
+    return min(map(x -> distance(locations, x), otherlocations))
 
 function pathlength(locations::Vector{Location})::Float64
     tot = 0
@@ -19,8 +29,44 @@ function pathlength(locations::Vector{Location})::Float64
     return tot
 end
 
-function clusterdistance(locs1::Vector{Location}, locs2::Vector{Locations})
-    
+function clusteringdistances(locations)
+    otherlocations = copy(locations)
+    cluster = [pop!(otherlocations)]
+    distances = []
+    while !isempty(otherlocations)
+        pair = closestelements(cluster, otherlocations)
+        push!(cluster, pair[2])
+        deleteat!(otherlocaitons, findall(x->x==pair[2], otherlocations))
+        push!(distances, distance(pair[1], pair[2]))
+    end
+    sort!(distances)
+    return distances        
+end
+
+function clustering(locations::Vector{Location}, n)
+    stair = cluteringdistances(locations)
+    dist = stair[end-n + 1]
+    lsts = [[locations[1]]]
+    for location in locations
+        if location == locations[1]
+            continue
+        end
+        idxs = findall(x->clusterdistance(distance(location, x) <= dist, lsts))
+        mergedcollections = mergecollections(lsts, idxs)
+        push!(mergedcollections, location)
+        deleteat!(lsts, idxs)
+        push!(lsts, mergedcollections)
+    end
+    return lsts
+end
+
+function mergecollections(collection, indexes)
+    mergedcollections = []
+    for i in indexes
+        push!(mergedcollections, collection[i])
+    end
+    return mergedcollections
+end
 
 function randomlocations(n::Int)::Vector{Location}
     v = Vector{Location}(undef, n)
