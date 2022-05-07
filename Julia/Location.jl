@@ -75,6 +75,15 @@ function clustering(locations::Vector{Location}, n)
     return lsts
 end
 
+function average(locations::Vector{Location})
+    x, y = 0, 0
+    for location in locations
+        x += location.longitude
+        y += location.latitude
+    end
+    return Location(floor(Int, x / length(locations)), floor(Int, y / length(locations)))
+end
+
 function mergecollections(collection::Vector{Vector{Location}}, indexes)::Vector{Location}
     mergedcollections = []
     for i in indexes
