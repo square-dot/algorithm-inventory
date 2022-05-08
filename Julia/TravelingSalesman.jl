@@ -18,7 +18,7 @@ function bruteforce(locations::Vector{Location})::Vector{Location}
 end
 
 function clusteringandsolving(locations::Vector{Location})
-    lsts = clustering(locations, 4)
+    lsts = clustering(locations, 9)
     solvedlsts = [bruteforce(l) for l in lsts]
     totalpath, labelslist = connectclusters(solvedlsts)
     return totalpath, labelslist
@@ -58,7 +58,7 @@ end
 
 
 
-locations = semirandomlocations(5, 20)
+locations = semirandomlocations(5, 35)
 
 
 plotpath(clusteringandsolving(locations)...)
