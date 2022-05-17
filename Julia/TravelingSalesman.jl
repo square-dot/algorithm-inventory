@@ -2,7 +2,6 @@ using Test
 using Combinatorics
 using Plots
 using Graphs
-# using GraphPlot
 using Cairo
 using GraphRecipes
 include("Location.jl")
@@ -56,9 +55,40 @@ function plotpath(path, labelslist)
         )
 end
 
+function extendshortestpath!(path, newlocation)
+    closestelement = closestelements([newlocation], path)[2]
+    idx = findfirst(isequal(closestelement), path)
+    if idx == 1
+        if distance(path[end], newlocation) < distance(path[2], newlocation)
+            insert!(path, 1, newlocation)
+        else
+            insert!(path, 2, newlocation)
+        end
+    elseif idx == length(path)
+        if distance(path[end - 1], newlocation) < distance(path[1], newlocation)
+            insert!(path, length(path), newlocation)
+        else
+            push!(path, newlocation)
+        end
+    else
+        if distance(path[idx - 1], newlocation) < distance(path[idx + 1], newlocation)
+            insert!(path, idx, newlocation)
+        else
+            insert!(path, idx + 1, newlocation)
+        end
+    end
+end
 
 
-locations = semirandomlocations(5, 35)
 
+global locations = semirandomlocations(5, 25)
 
-plotpath(clusteringandsolving(locations)...)
+global path = bruteforce(locations[1:4])
+
+for l in locations[5:end]
+    extendshortestpath!(path, l)
+    plotpath(path, ["" for l in path])
+    sleep(0.2)
+end
+
+plotpath(path, ["" for l in path])
