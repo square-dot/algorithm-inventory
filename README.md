@@ -2,7 +2,7 @@
 Implementation of some algorithms
 
 ## Fast Fourrier algorithm
-Implemented for polynomial multiplication ([https://www.geeksforgeeks.org/fast-fourier-transformation-poynomial-multiplication/](https://bit.ly/3NqUtP6))
+Implemented for polynomial multiplication ([https://www.geeksforgeeks.org/fast-fourier-transformation-poynomial-multiplication/])
 
 ## Traveling salesman
 - Brute force
