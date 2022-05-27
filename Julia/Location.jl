@@ -75,7 +75,7 @@ function clustering(locations::Vector{Location}, n)
     return lsts
 end
 
-function average(locations::Vector{Location})
+function middlepoint(locations::Vector{Location})
     x, y = 0, 0
     for location in locations
         x += location.longitude
