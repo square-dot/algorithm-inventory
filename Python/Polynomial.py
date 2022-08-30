@@ -1,7 +1,6 @@
 from cmath import exp, pi
 
 
-
 class Polynomial:
     def __init__(self, coefficients):
         self.coefficients = coefficients
@@ -21,6 +20,28 @@ class Polynomial:
 
     def squarerootpoints(self, n):
         sqroots = [self.evaluate(exp(2*pi*complex(0, 1)/n)) for _ in range(n)]
+        return sqroots
+
+    def degree2n(self):
+        v = [2**n for n in range(0, 16)]
+        m = min([l for l in v if l >= len(self.coefficients)])
+        return m
+
+    def DFT(self, n):
+        if self.degree2n() <= 1:
+            return self.coefficients[0]
+        else:
+            even = Polynomial(coefficients= [c for i,c in enumerate(self.coefficients) if i%2 == 0])
+            odd = Polynomial(coefficients= [c for i,c in enumerate(self.coefficients) if i%2 == 1])
+            return odd.DFT(n / 2) + exp(2*pi*complex(0, 1)/n)*even.DFT(n / 2)
+
+    
+
+
+
+
+
+
 
 
 def test(n, m):
@@ -29,6 +50,8 @@ def test(n, m):
     res = poly1.multiply(poly2)
     print(res.evaluate(1))
 
-test(6000, 4000)
+test(6000, 6000)
+
+
 
 
