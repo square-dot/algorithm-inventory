@@ -1,10 +1,14 @@
 import math
 import unittest
 import random
+import time
 
 from AdjacenceMatrix import *
 from Location import *
 from TravelingSalesman import *
+
+from Polynomial import *
+from FastFourierAlgorithm import *
 
 
 class LocationsLists:
@@ -223,3 +227,130 @@ class TestTravelingSalesman(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class PolynomialTests(unittest.TestCase):
+    def test_equality1(self):
+        poly1 = Polynomial([1, 2])
+        poly2 = Polynomial([1, 2])
+        self.assertTrue(poly1 == poly2)
+    
+    def test_equality2(self):
+        poly1 = Polynomial([1, 2, 0])
+        poly2 = Polynomial([1, 2])
+        self.assertTrue(poly1 == poly2)
+
+    def test_equality3(self):
+        poly1 = Polynomial([2, 5, 7, 8])
+        poly2 = Polynomial([4, 6, 7, 8])
+        self.assertFalse(poly1 == poly2)
+
+    def test_equality4(self):
+        poly1 = Polynomial([1, 5])
+        poly2 = Polynomial([1, 5, 7, 8])
+        self.assertFalse(poly1 == poly2)
+
+    def test_evaluate(self):
+        poly = Polynomial([1, 5, 7, 8])
+        self.assertTrue(poly.evaluate(2) == 103)
+
+class Fft(unittest.TestCase):
+    def test_fft(self):
+        poly = Polynomial(list(range(1, 9)))
+        n = degree2n(poly)
+        x_values = [uroot(n, k) for k in range(n)]
+        expected = [poly.evaluate(x) for x in x_values]
+        obtained = fft(poly)
+        for a in zip(expected, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+    def test_fft_with_inverse_1(self):
+        coefficients = list(range(1, 9))
+        poly = Polynomial(coefficients)
+        n = degree2n(poly)
+        a = inversefft(Polynomial(fft(poly)))
+        obtained  = [c / n for c in a]
+        for a in zip(coefficients, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+    def test_fft_with_inverse_2(self):
+        coefficients = [12.1, 0, -4, 6, 3.67, 9, 0, 3.6]
+        poly = Polynomial(coefficients)
+        n = degree2n(poly)
+        a = inversefft(Polynomial(fft(poly)))
+        obtained  = [c / n for c in a]
+        for a in zip(coefficients, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+    def test_fft_with_inverse_3(self):
+        coefficients = [12.1, 0, 6, 6]
+        poly = Polynomial(coefficients)
+        n = degree2n(poly)
+        a = inversefft(Polynomial(fft(poly)))
+        obtained  = [c / n for c in a]        
+        for a in zip(coefficients, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+class PolynomialMultiplicaiton(unittest.TestCase):
+    def test_correctness_0(self):
+        poly1 = Polynomial([1])
+        poly2 = Polynomial([1])
+        res_fft = multiplywithfft(poly1, poly2)
+        coefficients = [1]
+        obtained  = res_fft.coefficients      
+        for a in zip(coefficients, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+
+    def test_correctness_1(self):
+        poly1 = Polynomial([1, 2])
+        poly2 = Polynomial([1])
+        res_fft = multiplywithfft(poly1, poly2)
+        coefficients = [1, 2]
+        obtained  = res_fft.coefficients      
+        for a in zip(coefficients, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+    def test_correctness_2(self):
+        poly1 = Polynomial([1, 2])
+        poly2 = Polynomial([1, 2])
+        res_fft = multiplywithfft(poly1, poly2)
+        coefficients = [1, 4, 4]
+        obtained  = res_fft.coefficients      
+        for a in zip(coefficients, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+    def test_correctness_3(self):
+        poly1 = Polynomial([1, 3, 4])
+        poly2 = Polynomial([1, 2])
+        res_fft = multiplywithfft(poly1, poly2)
+        coefficients = [1, 5, 10, 8]
+        obtained  = res_fft.coefficients      
+        for a in zip(coefficients, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+    def test_correctness_4(self):
+        poly1 = Polynomial([2, 5, 7, 8])
+        poly2 = Polynomial([4, 6, 7, 8])
+        res_bf = poly1.multiply(poly2)
+        res_fft = multiplywithfft(poly1, poly2)
+        coefficients = res_bf.coefficients 
+        obtained  = res_fft.coefficients      
+        for a in zip(coefficients, obtained):
+            self.assertAlmostEqual(a[0], a[1])
+
+    def test_brute_force(self):
+        start_time = time.time()
+        poly1 = Polynomial(list(range(1, 5000)))
+        poly2 = Polynomial(list(range(1, 5000)))
+        res = poly1.multiply(poly2)
+        print("--- %s seconds for brute force ---" % (time.time() - start_time))
+        print(res.evaluate(1))
+
+    def test_fft(self):
+        start_time = time.time()
+        poly1 = Polynomial(list(range(1, 5)))
+        poly2 = Polynomial(list(range(1, 5)))
+        res = multiplywithfft(poly1, poly2)
+        print("--- %s seconds for fft ---" % (time.time() - start_time))
+        print(res.evaluate(1))
