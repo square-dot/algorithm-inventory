@@ -218,7 +218,7 @@ class TestTravelingSalesman(unittest.TestCase):
         print(f"Total lenght {pathlength(res)}")
 
     def test_divide_et_impera(self):
-        locations = LocationsLists.list(4)[:15]
+        locations = LocationsLists.list(4)[:8]
         random.shuffle(locations)
         res = divide_et_impera(locations)
         print(f"\nResult divide et impera:\n{res}")
@@ -254,7 +254,7 @@ class PolynomialTests(unittest.TestCase):
         poly = Polynomial([1, 5, 7, 8])
         self.assertTrue(poly.evaluate(2) == 103)
 
-class Fft(unittest.TestCase):
+class FastFourierTransform(unittest.TestCase):
     def test_fft(self):
         poly = Polynomial(list(range(1, 9)))
         n = degree2n(poly)
@@ -267,9 +267,7 @@ class Fft(unittest.TestCase):
     def test_fft_with_inverse_1(self):
         coefficients = list(range(1, 9))
         poly = Polynomial(coefficients)
-        n = degree2n(poly)
-        a = inversefft(Polynomial(fft(poly)))
-        obtained  = [c / n for c in a]
+        obtained = inversefft(Polynomial(fft(poly)))
         for a in zip(coefficients, obtained):
             self.assertAlmostEqual(a[0], a[1])
 
@@ -277,17 +275,14 @@ class Fft(unittest.TestCase):
         coefficients = [12.1, 0, -4, 6, 3.67, 9, 0, 3.6]
         poly = Polynomial(coefficients)
         n = degree2n(poly)
-        a = inversefft(Polynomial(fft(poly)))
-        obtained  = [c / n for c in a]
+        obtained = inversefft(Polynomial(fft(poly)))
         for a in zip(coefficients, obtained):
             self.assertAlmostEqual(a[0], a[1])
 
     def test_fft_with_inverse_3(self):
         coefficients = [12.1, 0, 6, 6]
         poly = Polynomial(coefficients)
-        n = degree2n(poly)
-        a = inversefft(Polynomial(fft(poly)))
-        obtained  = [c / n for c in a]        
+        obtained = inversefft(Polynomial(fft(poly)))
         for a in zip(coefficients, obtained):
             self.assertAlmostEqual(a[0], a[1])
 
@@ -341,16 +336,16 @@ class PolynomialMultiplicaiton(unittest.TestCase):
 
     def test_brute_force(self):
         start_time = time.time()
-        poly1 = Polynomial(list(range(1, 5000)))
-        poly2 = Polynomial(list(range(1, 5000)))
+        poly1 = Polynomial(list(range(1, 1_000)))
+        poly2 = Polynomial(list(range(1, 1_000)))
         res = poly1.multiply(poly2)
         print("--- %s seconds for brute force ---" % (time.time() - start_time))
         print(res.evaluate(1))
 
     def test_fft(self):
         start_time = time.time()
-        poly1 = Polynomial(list(range(1, 5)))
-        poly2 = Polynomial(list(range(1, 5)))
+        poly1 = Polynomial(list(range(1, 1_000)))
+        poly2 = Polynomial(list(range(1, 1_000)))
         res = multiplywithfft(poly1, poly2)
         print("--- %s seconds for fft ---" % (time.time() - start_time))
         print(res.evaluate(1))

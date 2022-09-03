@@ -15,6 +15,7 @@ def brute_force(locations):
 
 
 def divide_et_impera(locations):
+    return []
     still_to_improve = True
     trials= []
     setsnr = math.floor(len(locations) / max_brute_force)

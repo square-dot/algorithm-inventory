@@ -1,4 +1,4 @@
-from cmath import cos, exp, pi, sin
+from cmath import cos, pi, sin
 
 from Polynomial import *
 
@@ -17,41 +17,29 @@ def degree2n(polynomial: Polynomial):
     m = min([l for l in v if l >= len(polynomial.coefficients)])
     return m
 
-def fft(polynomial: Polynomial) -> list[complex]:
+def fft(polynomial: Polynomial, is_for_inverse = False) -> list[complex]:
     n = len(polynomial.coefficients)
-    assert n in [2**n for n in range(10)]
+    assert n in [2**n for n in range(20)]
     if n == 1:
         return [polynomial.coefficients[0]]
     evaluations = [complex(0,0)] * n
     odd = Polynomial(coefficients= [c for i,c in enumerate(polynomial.coefficients) if i%2 == 1])
     even = Polynomial(coefficients= [c for i,c in enumerate(polynomial.coefficients) if i%2 == 0])
     assert len(odd.coefficients) == n // 2 & len(even.coefficients) == n // 2
-    evaluation_odd = fft(odd)
-    evaluation_even = fft(even)
+    evaluation_odd = fft(odd, is_for_inverse)
+    evaluation_even = fft(even, is_for_inverse)
     for k in range(n // 2):
         assert len(evaluation_even) == n // 2, f"Error claiming {len(evaluation_even)} is equal to {n // 2}"
-        assert len(evaluation_odd) == n // 2, f"Error claiming {len(evaluation_odd)} is equal to {n // 2}" 
-        evaluations[k] = evaluation_even[k] + uroot(n, k) * evaluation_odd[k]
-        evaluations[k + n // 2] = evaluation_even[k] - uroot(n, k) * evaluation_odd[k]
+        assert len(evaluation_odd) == n // 2, f"Error claiming {len(evaluation_odd)} is equal to {n // 2}"
+        a = -1 if is_for_inverse else 1
+        evaluations[k] = evaluation_even[k] + uroot(n, a * k) * evaluation_odd[k]
+        evaluations[k + n // 2] = evaluation_even[k] - uroot(n, a * k) * evaluation_odd[k]
     return evaluations
 
 def inversefft(polynomial: Polynomial) -> list[complex]:
-    n = len(polynomial.coefficients)
-    assert n in [2**n for n in range(10)]
-    if n == 1:
-        return [polynomial.coefficients[0]]
-    evaluations = [complex(0,1)] * n
-    odd = Polynomial(coefficients= [c for i,c in enumerate(polynomial.coefficients) if i%2 == 1])
-    even = Polynomial(coefficients= [c for i,c in enumerate(polynomial.coefficients) if i%2 == 0])
-    assert len(odd.coefficients) == n // 2 & len(even.coefficients) == n // 2
-    evaluation_odd = inversefft(odd)
-    evaluation_even = inversefft(even)
-    for k in range(n // 2):
-        assert len(evaluation_even) == n // 2, f"Error claiming {len(evaluation_even)} is equal to {n // 2}"
-        assert len(evaluation_odd) == n // 2, f"Error claiming {len(evaluation_odd)} is equal to {n // 2}" 
-        evaluations[k] = evaluation_even[k] + uroot(n, -k) * evaluation_odd[k]
-        evaluations[k + n // 2] = evaluation_even[k] - uroot(n, -k) * evaluation_odd[k]
-    return [e for  e in  evaluations]
+    deg = len(polynomial.coefficients)
+    res = fft(polynomial, is_for_inverse=True)
+    return [c / deg for c in res]
 
 
 def multiplywithfft(poly1: Polynomial, poly2: Polynomial):
@@ -62,6 +50,6 @@ def multiplywithfft(poly1: Polynomial, poly2: Polynomial):
     values2 = fft(Polynomial(c2))
     endvalues = [a[0] * a[1] for a in zip(values1, values2)]
     coefficients = inversefft(Polynomial(endvalues))
-    return Polynomial(coefficients=[c / deg for c in coefficients])
+    return Polynomial(coefficients)
 
 
